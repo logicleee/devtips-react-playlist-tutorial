@@ -1,5 +1,3 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
 # Tutorial and other resources used:
 [React JS Prototyping Tutorial](https://www.youtube.com/playlist?list=PLqGj3iMvMa4LFqyGab_aR7M0zfQm2KTuX)
 [Create React App](https://facebook.github.io/create-react-app/docs/getting-started)
@@ -9,6 +7,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 
 
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 
