@@ -2,18 +2,20 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-let defaultTextColor = '#fff';
+const defaultTextColor = '#fff';
+const textTitleColor = '#61dafb';
 // defaultTextColor = '#61dafb';
 
 let defaultStyle = {
   color: defaultTextColor,
+  display: 'grid',
+  'grid-gap': '2rem'
 };
 
 class Aggregate extends React.Component {
   render () {
     return (
-        <div style={{...defaultStyle, width: "40%",
-                     display: "inline-block"}}>
+        <div style={defaultStyle}>
         <h2>Number Text</h2>
         </div>
     );
@@ -23,7 +25,9 @@ class Aggregate extends React.Component {
 class Filter extends React.Component {
   render() {
     return (
-        <div style={defaultStyle}>
+        // <div style={{...defaultStyle,
+        //              "grid-template-columns": 'repeat(2, 1fr)'}}>
+        <div style={{...defaultStyle, display: 'grid-row'}}>
         <img />
         <input type="text" />
         Filter
@@ -35,7 +39,7 @@ class Filter extends React.Component {
 class Playlist extends React.Component {
   render() {
     return (
-        <div style={{...defaultStyle, width: "25%", display: 'inline-block'}}>
+        <div style={defaultStyle}>
         <img />
         <h3>Playlist Name</h3>
         <ul><li>Song Title</li><li>Song Title</li><li>Song Title</li></ul>
@@ -48,14 +52,26 @@ export default function App() {
   return (
     <div className="App">
         <header className="App-header">
-      <h1 style={{...defaultStyle, color: '#61dafb'}}>Lee's Playlists</h1>
-            <Aggregate/>
-            <Aggregate/>
-            <Filter/>
-            <Playlist/>
-            <Playlist/>
-            <Playlist/>
-            <Playlist/>
+            <h1 style={{...defaultStyle, color: textTitleColor}}>Lee's Playlists
+            </h1>
+            <div style={{...defaultStyle,
+                        "grid-template-columns": 'repeat(2, 1fr)',
+                        }}>
+                <Aggregate/>
+                <Aggregate/>
+            </div>
+            <div style={defaultStyle}>
+                <Filter/>
+            </div>
+            <div style={{...defaultStyle,
+                        "grid-template-columns": 'repeat(4, 1fr)',
+                        "grid-template-rows": 'repeat(2, 25vh)',
+                        }}>
+                <Playlist/>
+                <Playlist/>
+                <Playlist/>
+                <Playlist/>
+            </div>
         </header>
     </div>
   );
