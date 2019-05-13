@@ -1,8 +1,13 @@
 # Tutorial and other resources used:
+
 [React JS Prototyping Tutorial](https://www.youtube.com/playlist?list=PLqGj3iMvMa4LFqyGab_aR7M0zfQm2KTuX)
+
 [Create React App](https://facebook.github.io/create-react-app/docs/getting-started)
+
 [Storybook](https://www.learnstorybook.com/react/en/get-started/)
+
 [Video about CSS Grid](https://www.youtube.com/watch?v=3Ne9-9n5Oq0&list=WL&index=2&t=77s)
+
 [MDN CSS Grid](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout)
 
 
