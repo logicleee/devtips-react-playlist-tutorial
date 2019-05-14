@@ -18,42 +18,85 @@ let fakeServerData = {
   playlists: [
     {
       name: 'my favs00',
-      songs: ['song001','song002','song003', 'song004', 'song005']
+      songs: [
+        {name: 'song001', duration: 480},
+        {name: 'song002', duration: 480},
+        {name: 'song003', duration: 480},
+        {name: 'song004', duration: 480},
+        {name: 'song005',  duration: 480}
+      ]
     },
     {
       name: 'my favs10',
-      songs: ['song101','song102','song103', 'song104', 'song105']
+      songs: [
+        {name: 'song101', duration: 480},
+        {name: 'song102', duration: 480},
+        {name: 'song103', duration: 480},
+        {name: 'song104', duration: 480},
+        {name: 'song105',  duration: 480}
+      ]
     },
     {
       name: 'my favs20',
-      songs: ['song201','song202','song203', 'song204', 'song205']
+      songs: [
+        {name: 'song201', duration: 480},
+        {name: 'song202', duration: 480},
+        {name: 'song203', duration: 480},
+        {name: 'song204', duration: 480},
+        {name: 'song205',  duration: 480}
+      ]
     },
     {
       name: 'my favs30',
-      songs: ['song301','song302','song303', 'song304', 'song305']
+      songs: [
+        {name: 'song301', duration: 480},
+        {name: 'song302', duration: 480},
+        {name: 'song303', duration: 480},
+        {name: 'song304', duration: 480},
+        {name: 'song305',  duration: 480}
+      ]
     },
     {
       name: 'my favs40',
-      songs: ['song401','song402','song403', 'song404', 'song405']
+      songs: [
+        {name: 'song401', duration: 480},
+        {name: 'song402', duration: 480},
+        {name: 'song403', duration: 480},
+        {name: 'song404', duration: 480},
+        {name: 'song405',  duration: 480}
+      ]
     }
   ]
   }
-}
+};
 
-class Aggregate extends React.Component {
+class HoursCounter extends Component {
   render () {
+    const totalDuration = this.props.playlists.map(x => x.songs)
+          .flat()
+          .reduce((acc,cv) => {
+            return acc + cv.duration;
+          }, 0);
+
     return (
         <div style={defaultStyle}>
-        {
-          this.props.playlists &&
-            <h2> {this.props.playlists.length} Playlists</h2>
-        }
+        <h2> {totalDuration} hours</h2>
         </div>
     );
   }
 }
 
-class Filter extends React.Component {
+class PlaylistCounter extends Component {
+  render () {
+    return (
+        <div style={defaultStyle}>
+            <h2> {this.props.playlists.length} playlists</h2>
+        </div>
+    );
+  }
+}
+
+class Filter extends Component {
   render() {
     return (
         // <div style={{...defaultStyle,
@@ -67,20 +110,24 @@ class Filter extends React.Component {
   }
 }
 
-class Playlist extends React.Component {
+class Playlist extends Component {
   render() {
     return (
         <div style={defaultStyle}>
         <img />
-        <h3>Playlist Name</h3>
-        <ul><li>Song Title</li><li>Song Title</li><li>Song Title</li></ul>
+        <h3>{this.props.playlist.name}</h3>
+        <ul>{this.props.playlist.songs.map((x,index) =>{
+          if (index < 4)
+            return <li>{x.name}</li>;
+        }
+        )}</ul>
         </div>
     );
   }
 }
 
 //export default function App() {
-class App extends React.Component {
+class App extends Component {
   constructor() {
     super();
     this.state = {serverData: {}};
@@ -93,20 +140,20 @@ class App extends React.Component {
   }
 
   render () {
+    const user = this.state.serverData.user;
     return (
         <div className="App">
         <header className="App-header">
-        {this.state.serverData.user ?
+        {user ?
          <div>
         <h1 style={{...defaultStyle, color: textTitleColor}}>
-         {this.state.serverData.user.name}'s Playlists
+         {user.name}'s Playlists
             </h1>
             <div style={{...defaultStyle,
                         "grid-template-columns": 'repeat(2, 1fr)',
                         }}>
-                <Aggregate playlists={this.state.serverData.user &&
-                                      this.state.serverData.user.playlists}/>
-                <Aggregate/>
+                <PlaylistCounter playlists={user.playlists}/>
+                <HoursCounter playlists={user.playlists}/>
             </div>
             <div style={defaultStyle}>
                 <Filter/>
@@ -115,10 +162,9 @@ class App extends React.Component {
                         "grid-template-columns": 'repeat(4, 1fr)',
                         "grid-template-rows": 'repeat(2, 25vh)',
                         }}>
-                <Playlist/>
-                <Playlist/>
-                <Playlist/>
-                <Playlist/>
+                {user.playlists.map(x => {
+return <Playlist playlist={x}/>})
+}
             </div>
         </div>: <h1>Loading...</h1> }
         </header>
