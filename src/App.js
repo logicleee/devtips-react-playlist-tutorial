@@ -4,7 +4,6 @@ import './App.css';
 
 const defaultTextColor = '#fff';
 const textTitleColor = '#61dafb';
-// defaultTextColor = '#61dafb';
 
 let defaultStyle = {
   color: defaultTextColor,
@@ -37,7 +36,7 @@ let fakeServerData = {
       ]
     },
     {
-      name: 'my favs20',
+      name: 'my favs21',
       songs: [
         {name: 'song201', duration: 480},
         {name: 'song202', duration: 480},
@@ -99,11 +98,10 @@ class PlaylistCounter extends Component {
 class Filter extends Component {
   render() {
     return (
-        // <div style={{...defaultStyle,
-        //              "grid-template-columns": 'repeat(2, 1fr)'}}>
         <div style={{...defaultStyle, display: 'grid-row'}}>
         <img />
-        <input type="text" />
+        <input type="text"
+               onKeyUp={event => this.props.onTextChange(event.target.value)}/>
         Filter
         </div>
     );
@@ -126,21 +124,31 @@ class Playlist extends Component {
   }
 }
 
-//export default function App() {
 class App extends Component {
   constructor() {
     super();
-    this.state = {serverData: {}};
+    this.state = {serverData: {},
+                  filterString: ''};
   }
 
   componentDidMount() {
     setTimeout(() => {
     this.setState({serverData: fakeServerData});
     }, 2000);
+    /*
+    setTimeout(() => {
+    this.setState({filterString: '10'});
+    }, 4000);
+    */
+
   }
 
   render () {
     const user = this.state.serverData.user;
+    const playlistsToRender = user && user.playlists.filter(x =>
+                                                x.name.toLowerCase().includes(
+                                                  this.state.filterString
+                                                    .toLowerCase()));
     return (
         <div className="App">
         <header className="App-header">
@@ -152,19 +160,23 @@ class App extends Component {
             <div style={{...defaultStyle,
                         "grid-template-columns": 'repeat(2, 1fr)',
                         }}>
-                <PlaylistCounter playlists={user.playlists}/>
-                <HoursCounter playlists={user.playlists}/>
+                <PlaylistCounter playlists={playlistsToRender}/>
+                <HoursCounter playlists={playlistsToRender}/>
             </div>
             <div style={defaultStyle}>
-                <Filter/>
+                <Filter onTextChange={text =>
+                        { return this.setState({filterString: text})}}/>
             </div>
             <div style={{...defaultStyle,
                         "grid-template-columns": 'repeat(4, 1fr)',
                         "grid-template-rows": 'repeat(2, 25vh)',
                         }}>
-                {user.playlists.map(x => {
-return <Playlist playlist={x}/>})
-}
+                {playlistsToRender.filter(x => {
+                    return x.name.toLowerCase()
+                        .includes(this.state.filterString.toLowerCase())})
+                        .map(x => {
+                        return <Playlist playlist={x}/>})
+                        }
             </div>
         </div>: <h1>Loading...</h1> }
         </header>
