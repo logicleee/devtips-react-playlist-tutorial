@@ -1,4 +1,7 @@
-# Tutorial and other resources used:
+# A [live demo of this app can be found on Heroku](https://ex-spotify-better-playlists.herokuapp.com)
+
+
+# Tutorial and other resources I used:
 
 [React JS Prototyping Tutorial](https://www.youtube.com/playlist?list=PLqGj3iMvMa4LFqyGab_aR7M0zfQm2KTuX)
 
