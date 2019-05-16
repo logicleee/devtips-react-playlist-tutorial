@@ -1,6 +1,7 @@
 import React, { Component, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import queryString from 'query-string';
 
 const defaultTextColor = '#fff';
 const textTitleColor = '#61dafb';
@@ -112,7 +113,9 @@ class Playlist extends Component {
   render() {
     return (
         <div style={defaultStyle}>
-        <img />
+        <img
+            src={this.props.playlist.imageUrl}
+      style={{width: '120px'}} />
         <h3>{this.props.playlist.name}</h3>
         <ul>{this.props.playlist.songs.map((x,index) =>{
           if (index < 4)
@@ -132,10 +135,45 @@ class App extends Component {
   }
 
   componentDidMount() {
+
+    const apiEndpoint = 'https://api.spotify.com/v1/me';
+    const apiPlaylistsEndpoint = apiEndpoint + '/playlists';
+    const token = queryString.parse(window.location.search)['access_token'];
+
+    if (! token)
+      return;
+
+    const headers = { headers: {'Authorization': 'Bearer ' + token}};
+
+    console.log('inital', this.state.serverData)
+    console.log('headers', headers)
+    fetch(apiEndpoint, headers)
+          .then((response) => response.json())
+          .then((data) => {
+        this.setState({serverData: {'user': {'name': data.display_name}}});
+        console.log(data);
+          });
+
+    fetch(apiPlaylistsEndpoint, headers)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+        this.setState({serverData: {'user': {
+          ...this.state.serverData.user,
+          'playlists': data.items.map((item) => ({
+            'name': item.name,
+            'songs': [],
+            'imageUrl': item.images[0].url
+          }))
+      }}
+      });
+      });
+
+    /*
+    const accessToken = window.location.search.match(/\#(?:access_token)\=([\S\s]*?)\&/)[1];
     setTimeout(() => {
     this.setState({serverData: fakeServerData});
     }, 2000);
-    /*
     setTimeout(() => {
     this.setState({filterString: '10'});
     }, 4000);
@@ -145,10 +183,11 @@ class App extends Component {
 
   render () {
     const user = this.state.serverData.user;
-    const playlistsToRender = user && user.playlists.filter(x =>
-                                                x.name.toLowerCase().includes(
-                                                  this.state.filterString
-                                                    .toLowerCase()));
+    const playlistsToRender =
+          user &&
+          user.playlists &&
+          user.playlists.filter(x => x.name.toLowerCase()
+                    .includes(this.state.filterString.toLowerCase()));
     return (
         <div className="App">
         <header className="App-header">
@@ -157,28 +196,42 @@ class App extends Component {
         <h1 style={{...defaultStyle, color: textTitleColor}}>
          {user.name}'s Playlists
             </h1>
-            <div style={{...defaultStyle,
-                        "grid-template-columns": 'repeat(2, 1fr)',
-                        }}>
-                <PlaylistCounter playlists={playlistsToRender}/>
-                <HoursCounter playlists={playlistsToRender}/>
-            </div>
-            <div style={defaultStyle}>
-                <Filter onTextChange={text =>
-                        { return this.setState({filterString: text})}}/>
-            </div>
-            <div style={{...defaultStyle,
-                        "grid-template-columns": 'repeat(4, 1fr)',
-                        "grid-template-rows": 'repeat(2, 25vh)',
-                        }}>
-                {playlistsToRender.filter(x => {
-                    return x.name.toLowerCase()
-                        .includes(this.state.filterString.toLowerCase())})
-                        .map(x => {
-                        return <Playlist playlist={x}/>})
-                        }
-            </div>
-        </div>: <h1>Loading...</h1> }
+        {user.playlists ?
+            <div>
+                <div style={{...defaultStyle,
+                            "grid-template-columns": 'repeat(2, 1fr)'}}>
+                    <PlaylistCounter playlists={playlistsToRender}/>
+                    <HoursCounter playlists={playlistsToRender}/>
+                </div>
+
+                <div style={defaultStyle}>
+                    <Filter onTextChange={text =>
+                            { return this.setState({filterString: text})}}/>
+                </div>
+
+                <div style={{...defaultStyle,
+                            "grid-template-columns": 'repeat(4, 1fr)',
+                            "grid-template-rows": 'repeat(2, 25vh)',
+                            }}>
+                    {playlistsToRender.filter(x => {
+                        return x.name.toLowerCase()
+                            .includes(this.state.filterString.toLowerCase())})
+                            .map(x => {
+                            return <Playlist playlist={x}/>})
+                    }
+                </div>
+            </div>: <h2>No playlist data</h2> }
+        </div>: <button onClick={() => {
+        window.location =  window.location.href.includes('localhost')
+                ? 'http://localhost:8888/login'
+                : 'https://ex-sptfy-better-plylsts-oauth.herokuapp.com/login'
+        }} style={{
+
+
+                      padding: '20px',
+                      'font-size': '50px',
+                      'margin-top': '20px'
+                      }}>Sign in to Spotify</button> }
         </header>
     </div>
   );
