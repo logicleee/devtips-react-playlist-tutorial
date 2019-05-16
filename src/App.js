@@ -1,73 +1,18 @@
 import React, { Component, useState } from 'react';
 import logo from './logo.svg';
+import reset from 'reset-css';
 import './App.css';
 import queryString from 'query-string';
 
 const defaultTextColor = '#fff';
 const textTitleColor = '#61dafb';
 
-let defaultStyle = {
+const defaultStyle = {
   color: defaultTextColor,
+  'font-family': '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
   display: 'grid',
+  'font-weight': '700',
   'grid-gap': '2rem'
-};
-
-let fakeServerData = {
-  user: {
-    name: 'Lee',
-  playlists: [
-    {
-      name: 'my favs00',
-      songs: [
-        {name: 'song001', duration: 480},
-        {name: 'song002', duration: 480},
-        {name: 'song003', duration: 480},
-        {name: 'song004', duration: 480},
-        {name: 'song005',  duration: 480}
-      ]
-    },
-    {
-      name: 'my favs10',
-      songs: [
-        {name: 'song101', duration: 480},
-        {name: 'song102', duration: 480},
-        {name: 'song103', duration: 480},
-        {name: 'song104', duration: 480},
-        {name: 'song105',  duration: 480}
-      ]
-    },
-    {
-      name: 'my favs21',
-      songs: [
-        {name: 'song201', duration: 480},
-        {name: 'song202', duration: 480},
-        {name: 'song203', duration: 480},
-        {name: 'song204', duration: 480},
-        {name: 'song205',  duration: 480}
-      ]
-    },
-    {
-      name: 'my favs30',
-      songs: [
-        {name: 'song301', duration: 480},
-        {name: 'song302', duration: 480},
-        {name: 'song303', duration: 480},
-        {name: 'song304', duration: 480},
-        {name: 'song305',  duration: 480}
-      ]
-    },
-    {
-      name: 'my favs40',
-      songs: [
-        {name: 'song401', duration: 480},
-        {name: 'song402', duration: 480},
-        {name: 'song403', duration: 480},
-        {name: 'song404', duration: 480},
-        {name: 'song405',  duration: 480}
-      ]
-    }
-  ]
-  }
 };
 
 class HoursCounter extends Component {
