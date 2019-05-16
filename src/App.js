@@ -77,10 +77,11 @@ class HoursCounter extends Component {
           .reduce((acc,cv) => {
             return acc + cv.duration;
           }, 0);
+    const totalDurationHours = Math.round(totalDuration / 60);
 
     return (
         <div style={defaultStyle}>
-        <h2> {totalDuration} hours</h2>
+        <h2> {totalDurationHours} hours</h2>
         </div>
     );
   }
@@ -136,49 +137,60 @@ class App extends Component {
 
   componentDidMount() {
 
-    const apiEndpoint = 'https://api.spotify.com/v1/me';
-    const apiPlaylistsEndpoint = apiEndpoint + '/playlists';
     const token = queryString.parse(window.location.search)['access_token'];
-
     if (! token)
       return;
 
+    const apiEndpoint = 'https://api.spotify.com/v1/me';
+    const apiPlaylistsEndpoint = apiEndpoint + '/playlists';
     const headers = { headers: {'Authorization': 'Bearer ' + token}};
 
-    console.log('inital', this.state.serverData)
-    console.log('headers', headers)
     fetch(apiEndpoint, headers)
-          .then((response) => response.json())
-          .then((data) => {
+      .then((response) => response.json())
+      .then((data) => {
         this.setState({serverData: {'user': {'name': data.display_name}}});
-        console.log(data);
-          });
+      })
+      .catch(error => console.log(error));
 
     fetch(apiPlaylistsEndpoint, headers)
       .then((response) => response.json())
+      .then(playlistData => {
+        if (! playlistData)
+          return
+        const playlists = playlistData.items
+        const trackDataPromises = playlists.map(playlist => {
+          const responsePromise = fetch(playlist.tracks.href, headers)
+          const trackDataPromise = responsePromise
+                .then(response => response.json())
+                .catch(error => console.log(error));
+          return trackDataPromise
+        });
+        const allTracksDataPromises = Promise.all(trackDataPromises)
+        const playlistsPromise = allTracksDataPromises.then(tracksDatas => {
+          tracksDatas.forEach((tracksData, i) => {
+            playlists[i].tracksDatas = tracksData.items
+              .map(item => item.track)
+              .map(trackData => ({
+                name: trackData.name,
+                duration: trackData.duration_ms / 1000
+              }));
+          });
+          return playlists;
+        });
+        return playlistsPromise;
+      })
       .then((data) => {
-        console.log(data)
         this.setState({serverData: {'user': {
           ...this.state.serverData.user,
-          'playlists': data.items.map((item) => ({
+          'playlists': data.map((item) => ({
             'name': item.name,
-            'songs': [],
-            'imageUrl': item.images[0].url
+            'imageUrl': item.images[0].url,
+            'songs': item.tracksDatas.slice(0,3)
           }))
-      }}
-      });
-      });
-
-    /*
-    const accessToken = window.location.search.match(/\#(?:access_token)\=([\S\s]*?)\&/)[1];
-    setTimeout(() => {
-    this.setState({serverData: fakeServerData});
-    }, 2000);
-    setTimeout(() => {
-    this.setState({filterString: '10'});
-    }, 4000);
-    */
-
+         }}
+        });
+      })
+      .catch(error => console.log(error));
   }
 
   render () {
@@ -186,12 +198,19 @@ class App extends Component {
     const playlistsToRender =
           user &&
           user.playlists &&
-          user.playlists.filter(x => x.name.toLowerCase()
-                    .includes(this.state.filterString.toLowerCase()));
+          user.playlists.filter(playlist => {
+          const matchesPlaylist = playlist.name.toLowerCase().includes(
+            this.state.filterString.toLowerCase());
+          const matchesSong = playlist.songs.find(song =>
+                  song.name.toLowerCase()
+                      .includes(this.state.filterString.toLowerCase()));
+            return matchesPlaylist || matchesSong;
+          });
+
     return (
         <div className="App">
         <header className="App-header">
-        {user ?
+        { playlistsToRender ?
          <div>
         <h1 style={{...defaultStyle, color: textTitleColor}}>
          {user.name}'s Playlists
@@ -213,25 +232,22 @@ class App extends Component {
                             "grid-template-columns": 'repeat(4, 1fr)',
                             "grid-template-rows": 'repeat(2, 25vh)',
                             }}>
-                    {playlistsToRender.filter(x => {
-                        return x.name.toLowerCase()
-                            .includes(this.state.filterString.toLowerCase())})
-                            .map(x => {
-                            return <Playlist playlist={x}/>})
-                    }
+                    {playlistsToRender.map(x =>
+                        {return <Playlist playlist={x}/>})}
+
                 </div>
             </div>: <h2>No playlist data</h2> }
-        </div>: <button onClick={() => {
+        </div>: <button
+    onClick={() => {
         window.location =  window.location.href.includes('localhost')
-                ? 'http://localhost:8888/login'
-                : 'https://ex-sptfy-better-plylsts-oauth.herokuapp.com/login'
-        }} style={{
-
-
-                      padding: '20px',
-                      'font-size': '50px',
-                      'margin-top': '20px'
-                      }}>Sign in to Spotify</button> }
+            ? 'http://localhost:8888/login'
+            : 'https://ex-sptfy-better-plylsts-oauth.herokuapp.com/login'
+        }}
+    style={{
+            padding: '20px',
+            'font-size': '50px',
+            'margin-top': '20px'
+            }}>Sign in to Spotify</button> }
         </header>
     </div>
   );
