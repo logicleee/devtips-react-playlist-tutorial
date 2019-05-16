@@ -22,7 +22,7 @@ class HoursCounter extends Component {
           .reduce((acc,cv) => {
             return acc + cv.duration;
           }, 0);
-    const totalDurationHours = Math.round(totalDuration / 60);
+    const totalDurationHours = (totalDuration / 3600 ).toFixed(1);
 
     return (
         <div style={defaultStyle}>
