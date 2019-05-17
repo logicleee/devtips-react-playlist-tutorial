@@ -3,7 +3,8 @@
   font-size: calc(10px + 1.5vmin);
   display: grid;
   color: white;
-  background-color: #282c34;
+  /* background-color: #282c34; */
+  background-image: linear-gradient(to bottom right,#282c34 45%, #404248);
   padding: 10px;
   margin: 0 auto;
 }

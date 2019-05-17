@@ -6,14 +6,35 @@ import queryString from 'query-string';
 
 const defaultTextColor = '#fff';
 const textTitleColor = '#61dafb';
+const textGreyColor = 'slategrey';
 
 const defaultStyle = {
   color: defaultTextColor,
-  'font-family': '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
+  'font-family': '-apple-system, BlinkMacSystemFont,                      \
+                 "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",   \
+                 "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
   display: 'grid',
   'font-weight': '700',
-  'grid-gap': '2rem'
+  'font-size': 'calc(10px + 1vmin)',
+  'grid-gap': '1rem'
 };
+
+const statsStyle = {
+  ...defaultStyle,
+  width: '40%',
+  'margin-top': 'calc(10px)',
+  'margin-bottom': 'calc(10px)',
+  'font-size': 'calc(10px + .8vmin)',
+  'line-height': 'calc(10px + 1vmin)',
+  color: textGreyColor
+};
+
+const titleStyle = {
+  ...defaultStyle,
+  'font-size': 'calc(10px + 1.8vmin)',
+  color: textTitleColor
+}
+
 
 class HoursCounter extends Component {
   render () {
@@ -25,7 +46,7 @@ class HoursCounter extends Component {
     const totalDurationHours = (totalDuration / 3600 ).toFixed(1);
 
     return (
-        <div style={defaultStyle}>
+        <div style={statsStyle}>
         <h2> {totalDurationHours} hours</h2>
         </div>
     );
@@ -35,7 +56,7 @@ class HoursCounter extends Component {
 class PlaylistCounter extends Component {
   render () {
     return (
-        <div style={defaultStyle}>
+        <div style={statsStyle}>
             <h2> {this.props.playlists.length} playlists</h2>
         </div>
     );
@@ -45,11 +66,9 @@ class PlaylistCounter extends Component {
 class Filter extends Component {
   render() {
     return (
-        <div style={{...defaultStyle, display: 'grid-row'}}>
-        <img />
+        <div style={{...statsStyle, display: 'grid-row'}}>
         <input type="text"
                onKeyUp={event => this.props.onTextChange(event.target.value)}/>
-        Filter
         </div>
     );
   }
@@ -62,10 +81,11 @@ class Playlist extends Component {
         <img
             src={this.props.playlist.imageUrl}
       style={{width: '120px'}} />
-        <h3>{this.props.playlist.name}</h3>
-        <ul>{this.props.playlist.songs.map((x,index) =>{
+        <h3 style={{'font-weight': '900'}}>{this.props.playlist.name}</h3>
+        <ul style={{'font-weight': '300'}}>{this.props.playlist.songs
+                                            .map((x,index) =>{
           if (index < 4)
-            return <li>{x.name}</li>;
+            return <li style={{'margin-top': '6px'}}>{x.name}</li>;
         }
         )}</ul>
         </div>
@@ -157,7 +177,7 @@ class App extends Component {
         <header className="App-header">
         { playlistsToRender ?
          <div>
-        <h1 style={{...defaultStyle, color: textTitleColor}}>
+        <h1 style={titleStyle}>
          {user.name}'s Playlists
             </h1>
         {user.playlists ?
@@ -190,14 +210,13 @@ class App extends Component {
         }}
     style={{
             padding: '20px',
-            'font-size': '50px',
-            'margin-top': '20px'
+            'margin-top': '20px',
+            'font-size': 'calc(20px + 1vmin)'
             }}>Sign in to Spotify</button> }
         </header>
     </div>
   );
   }
 }
-
 
 export default App;
